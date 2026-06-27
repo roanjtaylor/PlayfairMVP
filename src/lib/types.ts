@@ -9,6 +9,7 @@ export interface PortfolioFounder {
 export interface PortfolioCompany {
   id: string;
   name: string;
+  logoUrl?: string;
   sector: string;
   subsector?: string;
   description: string;
@@ -20,6 +21,7 @@ export interface PortfolioCompany {
   year?: number;
   hq?: string;
   accentColor?: string;
+  custom?: boolean;
 }
 
 export interface GitHubContributor {
@@ -93,10 +95,25 @@ export interface Candidate {
   source: 'github' | 'academic' | 'web';
 }
 
+export interface StudyReport {
+  candidateId: string;
+  candidateName: string;
+  deepAssessment: string;
+  strengths: string[];
+  concerns: string[];
+  outreachMessage: string;
+  dueDiligenceQuestions: string[];
+  verdict: 'strong' | 'interesting' | 'monitor';
+}
+
 export interface ExpansionResult {
   company: PortfolioCompany;
   candidates: Candidate[];
   githubData: GitHubContributor[];
   academicData: AcademicAuthor[];
   error?: string;
+}
+
+export interface StudyResult {
+  reports: StudyReport[];
 }
