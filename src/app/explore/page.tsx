@@ -165,6 +165,30 @@ function ExploreInner() {
       if (!res.ok) throw new Error(typeof data?.error === 'string' ? data.error : `HTTP ${res.status}`);
       setResult(data as ExpansionResult);
       if (data.candidates?.length > 0) setSelected(data.candidates[0]);
+
+      // Auto-save: localStorage (instant) + GitHub (persistent across devices)
+      try {
+        const LS_KEY = 'playfair-discoveries';
+        const raw = localStorage.getItem(LS_KEY);
+        const store = raw ? JSON.parse(raw) : { version: 1, expansions: [] };
+        store.expansions = store.expansions.filter(
+          (e: { company: { id: string } }) => e.company.id !== data.company.id
+        );
+        store.expansions.unshift({
+          id: `${data.company.id}-${Date.now()}`,
+          company: data.company,
+          candidates: data.candidates,
+          savedAt: new Date().toISOString(),
+          sources: s, depth: d, location: l,
+        });
+        localStorage.setItem(LS_KEY, JSON.stringify(store));
+      } catch { /* ignore */ }
+
+      fetch('/api/discoveries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ company: data.company, candidates: data.candidates, sources: s, depth: d, location: l }),
+      }).catch(() => { /* silent — localStorage is the fallback */ });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {

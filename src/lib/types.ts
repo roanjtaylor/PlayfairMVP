@@ -117,3 +117,18 @@ export interface ExpansionResult {
 export interface StudyResult {
   reports: StudyReport[];
 }
+
+export interface SavedExpansion {
+  id: string;
+  company: PortfolioCompany;
+  candidates: Candidate[];
+  savedAt: string;
+  sources: string[];
+  depth: number;
+  location: string;
+}
+
+export interface DiscoveriesStore {
+  version: number;
+  expansions: SavedExpansion[];
+}
