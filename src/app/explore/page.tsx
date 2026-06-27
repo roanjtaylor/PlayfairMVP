@@ -156,9 +156,14 @@ function ExploreInner() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ companyId: companyId || undefined, company, sources: s, depth: d, location: l }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
-      setResult(data);
+      const text = await res.text();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let data: any;
+      try { data = JSON.parse(text); } catch {
+        throw new Error(res.ok ? 'Unexpected server response — please try again' : `Server error (${res.status})`);
+      }
+      if (!res.ok) throw new Error(typeof data?.error === 'string' ? data.error : `HTTP ${res.status}`);
+      setResult(data as ExpansionResult);
       if (data.candidates?.length > 0) setSelected(data.candidates[0]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');

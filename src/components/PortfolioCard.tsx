@@ -22,8 +22,8 @@ export default function PortfolioCard({ company, selected, onClick, onRemove }: 
       className={clsx(
         'relative w-full text-left p-4 rounded-xl border transition-all duration-150',
         selected
-          ? 'border-[#111111] bg-[#111111]'
-          : 'border-[#EBEBEB] bg-white hover:border-[#AAAAAA]'
+          ? 'border-[#7B7FD4] bg-[#7B7FD4]'
+          : 'border-[#EBEBEB] bg-white hover:border-[#7B7FD4]'
       )}
     >
       {onRemove && (

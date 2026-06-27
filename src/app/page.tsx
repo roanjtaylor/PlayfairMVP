@@ -46,15 +46,17 @@ export default function HomePage() {
     <div className="min-h-screen bg-white">
       <Header />
 
-      <div className="max-w-screen-lg mx-auto px-5 py-10">
-        {/* Page title */}
-        <div className="mb-8">
+      {/* Hero band */}
+      <div className="bg-[#F5F5FC] border-b border-[#EAEAF5] px-5 py-8">
+        <div className="max-w-screen-lg mx-auto">
           <h1 className="text-[22px] font-bold text-[#111]">Trust Graph Explorer</h1>
-          <p className="text-[14px] text-[#999] mt-1">
+          <p className="text-[14px] text-[#888] mt-1">
             Select a portfolio company, choose your sources, and discover future founders.
           </p>
         </div>
+      </div>
 
+      <div className="max-w-screen-lg mx-auto px-5 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
           {/* Left + Centre: Portfolio */}
@@ -105,7 +107,7 @@ export default function HomePage() {
                 {([1, 2] as const).map((d) => (
                   <button key={d} onClick={() => setDepth(d)}
                     className={`py-2 text-[13px] font-medium rounded-lg border transition-all ${
-                      depth === d ? 'bg-[#111] text-white border-[#111]' : 'bg-white text-[#666] border-[#EBEBEB] hover:border-[#AAA]'
+                      depth === d ? 'bg-[#7B7FD4] text-white border-[#7B7FD4]' : 'bg-white text-[#666] border-[#EBEBEB] hover:border-[#7B7FD4]'
                     }`}>
                     {d === 1 ? 'One hop' : 'Two hops'}
                   </button>
@@ -121,7 +123,7 @@ export default function HomePage() {
                 {['UK', 'Europe', 'Global'].map((loc) => (
                   <button key={loc} onClick={() => setLocation(loc)}
                     className={`py-2 text-[12px] font-medium rounded-lg border transition-all ${
-                      location === loc ? 'bg-[#111] text-white border-[#111]' : 'bg-white text-[#666] border-[#EBEBEB] hover:border-[#AAA]'
+                      location === loc ? 'bg-[#7B7FD4] text-white border-[#7B7FD4]' : 'bg-white text-[#666] border-[#EBEBEB] hover:border-[#7B7FD4]'
                     }`}>
                     {loc}
                   </button>
@@ -135,7 +137,7 @@ export default function HomePage() {
                 disabled={!selected || !sources.length}
                 className={`w-full py-3 flex items-center justify-center gap-2 text-[14px] font-semibold rounded-xl transition-all ${
                   selected && sources.length
-                    ? 'bg-[#111] text-white hover:bg-[#333]'
+                    ? 'bg-[#7B7FD4] text-white hover:bg-[#6366C0]'
                     : 'bg-[#F5F5F5] text-[#BBB] cursor-not-allowed'
                 }`}
               >

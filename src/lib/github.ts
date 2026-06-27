@@ -9,61 +9,56 @@ function headers(): Record<string, string> {
 }
 
 async function ghFetch(url: string) {
-  const res = await fetch(url, { headers: headers(), next: { revalidate: 3600 } });
-  if (!res.ok) return null;
-  return res.json();
+  try {
+    const res = await fetch(url, {
+      headers: headers(),
+      next: { revalidate: 3600 },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
 }
 
-async function enrichUser(login: string): Promise<Partial<GitHubContributor>> {
-  const user = await ghFetch(`${BASE}/users/${login}`);
-  if (!user) return {};
-  return {
-    name: user.name || undefined,
-    bio: user.bio || undefined,
-    company: user.company?.replace('@', '').trim() || undefined,
-    location: user.location || undefined,
-    publicRepos: user.public_repos,
-    followers: user.followers,
-  };
-}
-
+// Simplified: no per-user enrichment — keeps total API calls to ~5 and well within timeout
 export async function fetchGitHubContributors(
   domains: string[],
   githubOrg?: string
 ): Promise<GitHubContributor[]> {
   const contributors = new Map<string, GitHubContributor>();
 
-  // 1. If we have a known org, grab its members
+  // 1. Org members (single call)
   if (githubOrg) {
-    const members = await ghFetch(`${BASE}/orgs/${githubOrg}/members?per_page=30`);
+    const members = await ghFetch(`${BASE}/orgs/${githubOrg}/members?per_page=20`);
     if (Array.isArray(members)) {
-      for (const m of members.slice(0, 8)) {
-        const extra = await enrichUser(m.login);
+      for (const m of members.slice(0, 12)) {
         contributors.set(m.login, {
           login: m.login,
           avatarUrl: m.avatar_url,
           profileUrl: m.html_url,
           source: 'org-member',
-          ...extra,
         });
       }
     }
   }
 
-  // 2. Search repos by domain keywords and get contributors
-  const query = domains.slice(0, 3).join('+');
+  // 2. Search repos by domain keywords and pull top contributors (3 repos × 8 contributors = 3 calls)
+  const query = domains.slice(0, 2).join('+');
   const searchData = await ghFetch(
-    `${BASE}/search/repositories?q=${encodeURIComponent(query)}&sort=stars&per_page=8&type=Repositories`
+    `${BASE}/search/repositories?q=${encodeURIComponent(query)}&sort=stars&per_page=4`
   );
 
   if (searchData?.items) {
-    for (const repo of searchData.items.slice(0, 4)) {
-      const contribs = await ghFetch(`${BASE}/repos/${repo.full_name}/contributors?per_page=6`);
+    for (const repo of searchData.items.slice(0, 3)) {
+      if (contributors.size >= 20) break;
+      const contribs = await ghFetch(
+        `${BASE}/repos/${repo.full_name}/contributors?per_page=8`
+      );
       if (!Array.isArray(contribs)) continue;
-
       for (const c of contribs) {
-        if (contributors.has(c.login)) continue;
-        const extra = await enrichUser(c.login);
+        if (contributors.has(c.login) || contributors.size >= 20) break;
         contributors.set(c.login, {
           login: c.login,
           avatarUrl: c.avatar_url,
@@ -71,15 +66,10 @@ export async function fetchGitHubContributors(
           contributions: c.contributions,
           repo: repo.full_name,
           repoStars: repo.stargazers_count,
-          repoDescription: repo.description || undefined,
+          repoDescription: repo.description ?? undefined,
           source: 'repo-contributor',
-          ...extra,
         });
-
-        // Rate-limit guard: stop after 20 unique contributors
-        if (contributors.size >= 20) break;
       }
-      if (contributors.size >= 20) break;
     }
   }
 

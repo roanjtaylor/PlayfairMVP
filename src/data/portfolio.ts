@@ -1,11 +1,15 @@
 import type { PortfolioCompany } from '@/lib/types';
 
-// Logos via Clearbit Logo API — fallback to initials if unavailable
+// Logos via Google favicon service — highly reliable, no API key needed
+function favicon(domain: string) {
+  return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+}
+
 export const portfolio: PortfolioCompany[] = [
   {
     id: 'stackone',
     name: 'StackOne',
-    logoUrl: 'https://logo.clearbit.com/stackone.com',
+    logoUrl: favicon('stackone.com'),
     sector: 'Enterprise',
     subsector: 'HR Tech / Unified API',
     description: 'Unified API platform for HR, ATS, and workforce management integrations',
@@ -24,7 +28,7 @@ export const portfolio: PortfolioCompany[] = [
   {
     id: 'orca-ai',
     name: 'Orca AI',
-    logoUrl: 'https://logo.clearbit.com/orca-ai.io',
+    logoUrl: favicon('orca-ai.io'),
     sector: 'AI',
     subsector: 'Maritime / Autonomous Systems',
     description: 'AI-powered autonomous navigation and collision avoidance for maritime vessels',
@@ -42,7 +46,7 @@ export const portfolio: PortfolioCompany[] = [
   {
     id: 'recycleye',
     name: 'Recycleye',
-    logoUrl: 'https://logo.clearbit.com/recycleye.com',
+    logoUrl: favicon('recycleye.com'),
     sector: 'Climate',
     subsector: 'AI Robotics',
     description: 'AI vision and robotics for automated waste recognition and recycling',
@@ -61,7 +65,7 @@ export const portfolio: PortfolioCompany[] = [
   {
     id: 'juro',
     name: 'Juro',
-    logoUrl: 'https://logo.clearbit.com/juro.com',
+    logoUrl: favicon('juro.com'),
     sector: 'Enterprise',
     subsector: 'Legal Tech',
     description: 'AI-native contract management platform for legal and business teams',
@@ -79,7 +83,7 @@ export const portfolio: PortfolioCompany[] = [
   {
     id: 'lapse',
     name: 'Lapse',
-    logoUrl: 'https://logo.clearbit.com/lapse.com',
+    logoUrl: favicon('lapse.com'),
     sector: 'Consumer',
     subsector: 'Social / Mobile',
     description: 'Spontaneous photo-sharing social app inspired by disposable cameras',
@@ -97,7 +101,7 @@ export const portfolio: PortfolioCompany[] = [
   {
     id: 'primer',
     name: 'Primer',
-    logoUrl: 'https://logo.clearbit.com/primer.io',
+    logoUrl: favicon('primer.io'),
     sector: 'Fintech',
     subsector: 'Payments',
     description: 'Headless payment orchestration infrastructure for enterprise merchants',
@@ -116,7 +120,7 @@ export const portfolio: PortfolioCompany[] = [
   {
     id: 'passionfroot',
     name: 'Passionfroot',
-    logoUrl: 'https://logo.clearbit.com/passionfroot.me',
+    logoUrl: favicon('passionfroot.me'),
     sector: 'Creator Economy',
     subsector: 'Monetisation',
     description: 'Platform for creators to monetise audiences through sponsorships',
@@ -134,7 +138,7 @@ export const portfolio: PortfolioCompany[] = [
   {
     id: 'spoke',
     name: 'Spoke',
-    logoUrl: 'https://logo.clearbit.com/spoke.app',
+    logoUrl: favicon('spoke.app'),
     sector: 'Enterprise',
     subsector: 'HR Tech',
     description: 'Modern HR platform for frontline and deskless workers',
@@ -152,7 +156,7 @@ export const portfolio: PortfolioCompany[] = [
   {
     id: 'flown',
     name: 'Flown',
-    logoUrl: 'https://logo.clearbit.com/flown.com',
+    logoUrl: favicon('flown.com'),
     sector: 'Productivity',
     subsector: 'Future of Work',
     description: 'Deep work community helping people achieve peak focus through body doubling',
@@ -170,14 +174,14 @@ export const portfolio: PortfolioCompany[] = [
   {
     id: 'impala',
     name: 'Impala',
-    logoUrl: 'https://logo.clearbit.com/impala.travel',
+    logoUrl: favicon('impala.travel'),
     sector: 'Travel Tech',
     subsector: 'Hotel Distribution',
     description: 'API platform connecting hotels to the global distribution ecosystem',
     founders: [
       { name: 'Alan Clarke', role: 'CEO' },
     ],
-    domains: ['travel-tech', 'hotel-api', 'distribution', 'b2b-saas', 'marketplace'],
+    domains: ['travel-tech', 'hotel-api', 'distribution', 'b2b-saas'],
     website: 'impala.travel',
     stage: 'Series A',
     year: 2018,
@@ -187,7 +191,7 @@ export const portfolio: PortfolioCompany[] = [
   {
     id: 'pave',
     name: 'Pave',
-    logoUrl: 'https://logo.clearbit.com/pave.com',
+    logoUrl: favicon('pave.com'),
     sector: 'HR Tech',
     subsector: 'Compensation',
     description: 'Real-time compensation benchmarking and total rewards platform',
@@ -204,7 +208,7 @@ export const portfolio: PortfolioCompany[] = [
   {
     id: 'screenloop',
     name: 'Screenloop',
-    logoUrl: 'https://logo.clearbit.com/screenloop.com',
+    logoUrl: favicon('screenloop.com'),
     sector: 'HR Tech',
     subsector: 'AI Hiring',
     description: 'AI-powered interview intelligence and hiring quality platform',
@@ -212,7 +216,7 @@ export const portfolio: PortfolioCompany[] = [
       { name: 'Tom Dorman', role: 'CEO' },
       { name: 'Andy Tweddle', role: 'CTO' },
     ],
-    domains: ['hiring', 'interview-intelligence', 'talent-acquisition', 'ai', 'hr-tech'],
+    domains: ['hiring', 'interview-intelligence', 'talent-acquisition', 'ai'],
     website: 'screenloop.com',
     stage: 'Seed',
     year: 2021,
