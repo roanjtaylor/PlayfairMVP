@@ -1,0 +1,65 @@
+import { NextResponse } from 'next/server';
+import { portfolio } from '@/data/portfolio';
+import { fetchGitHubContributors } from '@/lib/github';
+import { fetchAcademicAuthors } from '@/lib/openAlex';
+import { generateCandidates } from '@/lib/claude';
+import type { ExpansionResult } from '@/lib/types';
+
+export const maxDuration = 60;
+
+export async function POST(request: Request) {
+  const body = await request.json().catch(() => null);
+  if (!body) {
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+  }
+
+  const { companyId, sources = ['github', 'academic'], depth = 1, location = 'UK' } = body;
+
+  const company = portfolio.find((c) => c.id === companyId);
+  if (!company) {
+    return NextResponse.json({ error: `Company '${companyId}' not found` }, { status: 404 });
+  }
+
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return NextResponse.json(
+      { error: 'ANTHROPIC_API_KEY is not set. Add it to .env.local to enable AI generation.' },
+      { status: 503 }
+    );
+  }
+
+  try {
+    // Fetch data sources in parallel
+    const [githubData, academicData] = await Promise.all([
+      sources.includes('github')
+        ? fetchGitHubContributors(company.domains, company.githubOrg).catch(() => [])
+        : Promise.resolve([]),
+      sources.includes('academic')
+        ? fetchAcademicAuthors(company.domains).catch(() => [])
+        : Promise.resolve([]),
+    ]);
+
+    // Generate candidates via Claude
+    const candidates = await generateCandidates(
+      company,
+      githubData,
+      academicData,
+      depth,
+      location
+    );
+
+    const result: ExpansionResult = {
+      company,
+      candidates,
+      githubData,
+      academicData,
+    };
+
+    return NextResponse.json(result);
+  } catch (err) {
+    console.error('[/api/expand] error:', err);
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : 'Unknown error' },
+      { status: 500 }
+    );
+  }
+}
