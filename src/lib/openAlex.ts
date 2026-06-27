@@ -6,13 +6,17 @@ const UA = 'PlayfairMap/1.0 (mailto:hello@playfair.vc)';
 export async function fetchAcademicAuthors(domains: string[]): Promise<AcademicAuthor[]> {
   const query = domains.slice(0, 3).join(' ');
 
-  const res = await fetch(
-    `${BASE}/works?filter=title.search:${encodeURIComponent(query)},publication_year:>2021&sort=cited_by_count:desc&per_page=25&select=id,title,publication_year,cited_by_count,authorships`,
-    {
-      headers: { 'User-Agent': UA },
-      next: { revalidate: 3600 },
-    }
-  );
+  let res: Response;
+  try {
+    res = await fetch(
+      `${BASE}/works?filter=title.search:${encodeURIComponent(query)},publication_year:>2021&sort=cited_by_count:desc&per_page=15&select=id,title,publication_year,cited_by_count,authorships`,
+      {
+        headers: { 'User-Agent': UA },
+        next: { revalidate: 3600 },
+        signal: AbortSignal.timeout(6000),
+      }
+    );
+  } catch { return []; }
 
   if (!res.ok) return [];
 

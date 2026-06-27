@@ -28,7 +28,11 @@ export async function POST(request: Request) {
   }
 
   try {
-    const [githubData, academicData] = await Promise.all([
+    // Hard 12-second cap on external data fetching so Claude always has time to respond
+    const dataTimeout = new Promise<[never[], never[]]>((r) =>
+      setTimeout(() => r([[], []]), 12000)
+    );
+    const dataFetch = Promise.all([
       sources.includes('github')
         ? fetchGitHubContributors(company.domains, company.githubOrg).catch(() => [])
         : Promise.resolve([]),
@@ -36,6 +40,7 @@ export async function POST(request: Request) {
         ? fetchAcademicAuthors(company.domains).catch(() => [])
         : Promise.resolve([]),
     ]);
+    const [githubData, academicData] = await Promise.race([dataFetch, dataTimeout]);
 
     const candidates = await generateCandidates(company, githubData, academicData, depth, location);
 

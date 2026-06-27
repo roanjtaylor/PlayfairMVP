@@ -13,7 +13,7 @@ async function ghFetch(url: string) {
     const res = await fetch(url, {
       headers: headers(),
       next: { revalidate: 3600 },
-      signal: AbortSignal.timeout(8000),
+      signal: AbortSignal.timeout(4000),
     });
     if (!res.ok) return null;
     return res.json();
