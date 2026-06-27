@@ -15,7 +15,7 @@ export async function generateCandidates(
   const prompt = `You are a senior analyst at Playfair Capital, a UK-based early-stage VC fund.
 
 ## Task
-Identify ${depth === 2 ? '10–14' : '8–10'} exceptional people from the data below who could plausibly become founders in the next 1–3 years and who fit Playfair's investment thesis.
+Identify ${depth === 2 ? '7–8' : '5–6'} exceptional people from the data below who could plausibly become founders in the next 1–3 years and who fit Playfair's investment thesis.
 
 ## Portfolio Company
 - **Name:** ${company.name}
@@ -98,7 +98,7 @@ Return ONLY a valid JSON array. No explanation. No markdown. Just the array.
 
   const message = await client.messages.create({
     model: 'claude-haiku-4-5-20251001',
-    max_tokens: 4096,
+    max_tokens: 7000,
     messages: [{ role: 'user', content: prompt }],
   });
 
